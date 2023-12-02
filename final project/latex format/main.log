@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023) (preloaded format=xelatex 2023.12.1)  1 DEC 2023 18:55
+This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023) (preloaded format=xelatex 2023.12.1)  3 DEC 2023 01:59
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -667,34 +667,29 @@ Package microtype Info: Character `\guilsinglleft ' is missing
 Package microtype Info: Character `\guilsinglright ' is missing
 (microtype)             in font `\TU/UnBatang.ttf(0)/b/n/12'.
 (microtype)             Ignoring protrusion settings for this character.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 102.
+(Font)              <7> on input line 97.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 102.
- (d:/Program Files (x86)/texlive/2023/texmf-dist/tex/latex/microtype/mt-cmr.cfg
+(Font)              <5> on input line 97.
+(d:/Program Files (x86)/texlive/2023/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman (RS)
 )
-File: img/lr0.1 sgd.jpg Graphic file (type bmp)
-<img/lr0.1 sgd.jpg>
-File: img/lr0.1 gravity.jpg Graphic file (type bmp)
-<img/lr0.1 gravity.jpg>
-File: img/lr0.1 cosine.jpg Graphic file (type bmp)
-<img/lr0.1 cosine.jpg>
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+File: img/cosine vector.jpg Graphic file (type bmp)
+<img/cosine vector.jpg>
 
 
 LaTeX Font Warning: Font shape `TU/ptm/m/sl' undefined
-(Font)              using `TU/ptm/m/it' instead on input line 175.
+(Font)              using `TU/ptm/m/it' instead on input line 105.
 
 
 LaTeX Font Warning: Font shape `TU/ptm/m/it' undefined
-(Font)              using `TU/ptm/m/n' instead on input line 175.
+(Font)              using `TU/ptm/m/n' instead on input line 105.
 
 
 LaTeX Font Warning: Font shape `TU/UnBatang.ttf(0)/m/it' undefined
-(Font)              using `TU/UnBatang.ttf(0)/m/n' instead on input line 175.
+(Font)              using `TU/UnBatang.ttf(0)/m/n' instead on input line 105.
 
 Package microtype Info: Character `\quotesinglbase ' is missing
 (microtype)             in font `\TU/UnBatang.ttf(0)/m/it/9'.
@@ -709,13 +704,34 @@ Package microtype Info: Character `\guilsinglright ' is missing
 (microtype)             in font `\TU/UnBatang.ttf(0)/m/it/9'.
 (microtype)             Ignoring protrusion settings for this character.
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Underfull \vbox (badness 1715) has occurred while \output is active []
 
  [1
 
 
 
 ]
+File: img/lr0.05 m0.03.jpg Graphic file (type bmp)
+<img/lr0.05 m0.03.jpg>
+
+
+LaTeX Font Warning: Font shape `TU/ptm/m/sl' undefined
+(Font)              using `TU/ptm/m/it' instead on input line 163.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+File: img/lr0.1 sgd.jpg Graphic file (type bmp)
+<img/lr0.1 sgd.jpg>
+File: img/lr0.1 gravity.jpg Graphic file (type bmp)
+<img/lr0.1 gravity.jpg>
+File: img/lr0.1 cosine.jpg Graphic file (type bmp)
+<img/lr0.1 cosine.jpg>
+
+
+LaTeX Font Warning: Font shape `TU/ptm/m/sl' undefined
+(Font)              using `TU/ptm/m/it' instead on input line 186.
+
 File: img/lr0.01 sgd.jpg Graphic file (type bmp)
 <img/lr0.01 sgd.jpg>
 File: img/lr0.01 gravity.jpg Graphic file (type bmp)
@@ -727,9 +743,8 @@ File: img/lr0.01 cosine0.05.jpg Graphic file (type bmp)
 File: img/lr0.01 cosine0.01.jpg Graphic file (type bmp)
 <img/lr0.01 cosine0.01.jpg>
 
-
 LaTeX Font Warning: Font shape `TU/ptm/m/sl' undefined
-(Font)              using `TU/ptm/m/it' instead on input line 201.
+(Font)              using `TU/ptm/m/it' instead on input line 212.
 
 File: img/lr0.2 sgd.jpg Graphic file (type bmp)
 <img/lr0.2 sgd.jpg>
@@ -743,10 +758,16 @@ File: img/lr0.2 cosine0.01.jpg Graphic file (type bmp)
 <img/lr0.2 cosine0.01.jpg>
 
 LaTeX Font Warning: Font shape `TU/ptm/m/sl' undefined
-(Font)              using `TU/ptm/m/it' instead on input line 229.
+(Font)              using `TU/ptm/m/it' instead on input line 240.
 
+
+Underfull \vbox (badness 1472) has occurred while \output is active []
+
+ [2]
 No file main.bbl.
-[2] (./main.aux)
+[3
+
+] (./main.aux)
  ***********
 LaTeX2e <2023-11-01>
 L3 programming layer <2023-11-09>
@@ -759,12 +780,12 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 18448 strings out of 474923
- 333819 string characters out of 5756116
- 1978189 words of memory out of 5000000
- 40219 multiletter control sequences out of 15000+600000
+ 18468 strings out of 474923
+ 334297 string characters out of 5756116
+ 1974189 words of memory out of 5000000
+ 40237 multiletter control sequences out of 15000+600000
  558629 words of font info for 62 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  108i,11n,121p,1061b,2744s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on main.pdf (2 pages).
+Output written on main.pdf (3 pages).
