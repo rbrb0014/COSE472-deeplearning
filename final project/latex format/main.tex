@@ -93,10 +93,11 @@ Optimizer로 가장 대표적으로 사용된다고 할 수 있는 것은 바로
 
 
 \section{Methods}
-여기서는 optimizer을 만드는 데 있어 새로운 개념을 도입한 두 가지 새로운 optimizer을 이용한다. 이 두 가지는 learning rate를 결과값을 향한 중력 방식의 가속도의 강도라는 개념을 도입한 gravity optimizer와, momentum이 가리키는 방향과 진행방향이 다르다면 급격한 가중치를 주어 방향을 전환시키는 cosine optimizer을 소개한다.\\
-1. gravity optimizer\\
+해당 연구에서는 optimizer을 새로 만드는 데 있어 두 가지의 새로운 개념을 도입한다. learning rate라는 결과값을 향한 중력가속도가 존재한다는 개념을 도입한 gravity optimizer와, 현재 적용되고있는 관성(momentum)과는 다른 방향으로 새로운 가중치가 추가된다면 여기서는 optimizer을 만드는 데 있어 새로운 개념을 도입한 두 가지 새로운 optimizer을 이용한다. 이 두 가지는 learning rate를 결과값을 향한 중력 방식의 가속도의 강도라는 개념을 도입한 gravity optimizer와, momentum이 가리키는 방향과 진행방향이 다르다면 급격한 가중치를 주어 방향을 전환시키는 cosine optimizer을 소개한다.
+
+\subsection{gravity optimizer}
 첫 번째 소개할 방식은 gravity optimizer이다. 이는 기본적인 weight의 방향 말고, 결과값을 향한 가속도를 lr의 크기로 설정한다. 이를 통해 벡터가 클수록 더 강한 속도로 학습되고 있음을 보정한다. Algorithm~\ref{alg:gravity} 이 그 의사코드 형태를 보여준다. \\
-우선 Figure~\ref{prf:cosine}을 보면, 유도 과정을 쉽게 이해할 수 있다. 결과부터 이야기를 하자면, 원래의 gradient값을 가지는 gradient vector에서 gravity만큼의 방향벡터를 추가해 cosine vector와 같은 크기로 조정을 해주는 것이다. 먼저 gradient vector는 gradient로 이루어진 전체 vector의 크기이다. gravity가 사실상 핵심 부분이다. gravity는 $lr\cdot\sqrt{N}$으로, learning rate를 vector dimension의 루트로 나눈 것으로 한다. 그냥 lr로 할 수 있지만 $\sqrt{N}$으로 곱해준 것은 demension이 너무 커질 경우, 아무리 lr을 값을 조정해도 그 사이즈 때문에 의미가 없는 값처럼 작아지기 때문이다. 그렇기 때문에 $\sqrt{N}$를 곱해 의미가 있도록 해준다. 이후 계산이 중요하다. \\
+우선 Figure~\ref{prf:gravity}을 보면, 유도 과정을 쉽게 이해할 수 있다. 결과부터 이야기를 하자면, 원래의 gradient값을 가지는 gradient vector에서 gravity만큼의 방향벡터를 추가해 cosine vector와 같은 크기로 조정을 해주는 것이다. 먼저 gradient vector는 gradient로 이루어진 전체 vector의 크기이다. gravity가 사실상 핵심 부분이다. gravity는 $lr\cdot\sqrt{N}$으로, learning rate를 vector dimension의 루트로 나눈 것으로 한다. 그냥 lr로 할 수 있지만 $\sqrt{N}$으로 곱해준 것은 demension이 너무 커질 경우, 아무리 lr을 값을 조정해도 그 사이즈 때문에 의미가 없는 값처럼 작아지기 때문이다. 그렇기 때문에 $\sqrt{N}$를 곱해 의미가 있도록 해준다. 이후 계산이 중요하다. \\
 $\vec{cosine}=\sqrt{(\vec{gradient})^2+gravity^2} \\
 cos\theta=\frac{|\vec{gradient|}}{|\vec{cosine}|} \\
 \vec{newgradient}=\vec{gradient}*cos\theta $ \\
@@ -105,7 +106,7 @@ cos\theta=\frac{|\vec{gradient|}}{|\vec{cosine}|} \\
 \begin{figure}
    \includegraphics[width=\columnwidth]{img/cosine vector.jpg}
    \caption{Gravity Momentum}
-   \label{prf:cosine}
+   \label{prf:gravity}
 \end{figure}
 
 \begin{algorithm}[tb]
@@ -125,8 +126,8 @@ cos\theta=\frac{|\vec{gradient|}}{|\vec{cosine}|} \\
 \end{algorithmic}
 \end{algorithm}
 
-2. cosine optimizer\\
-두 번째 소개할 방식은 cosine optimizer이다. 이는 현재 진행방향이 이번에 받은 가속도와 방향이 많이 다를수록, 더 확실하게 이번 가속도를 많이 반영하는 방식이다. 말 그대로 두 벡터의 회전각을 구해 각이 평각에 가까워질수록 더 작은 값을 적용하도록 한다.\\$cos\theta=\frac{\vec{m}\cdot\vec{g}}{||m||\cdot||g||}$를 통해 각도를 구한 후, 저장되어있는 과거의 momentum에 추가해준다. 각이 벌어질수록 0에 가깝고 각이 작을수록 그대로 해줘야하니 값을 변형해 적용한다. Algorithm~\ref{alg:cosine}에서 의사코드 형태를 보인다.
+\subsection{cosine optimizer}
+두 번째 소개할 방식은 cosine optimizer이다. 이는 현재 가지고 있는 관성 방향이 이번에 받을 가속도와는 방향 차이가 많이 날 수록, 이번에 받는 가속도를 더 확실하게 많이 반영받는 방식이다. cosine optimizer라는 이름에 걸맞게 momentum vector와 gradient vector의 사잇각의 cosine값을 구해 -1과 가까울수록 momentum을 0에 가깝게, 1과 가까울수록 1에 가깝게 현재의 momentum을 적용하는 방식이다.\\$cos\theta=\frac{\vec{m}\cdot\vec{g}}{||m||\cdot||g||}$를 통해 끼인각의 cosine값을 구한 후, 저장되어있는 과거의 momentum에 추가해준다. 각의 크기에 따라 그 적용하는 값을 크기를 [0, 1] 범위 내로 binding해줘야 하니 Algorithm~\ref{alg:cosine}의 의사코드에서처럼 변형 후에 곱셈을 진행해준다.
 
 \begin{algorithm}[tb]
    \caption{Cosine Optimizer}
@@ -146,17 +147,18 @@ cos\theta=\frac{|\vec{gradient|}}{|\vec{cosine}|} \\
 \end{algorithmic}
 \end{algorithm}
 
+\subsection{Excepcted result}
 두가지 방식이 모두 효과적인 향상을 불러일으키지 못하더라도 optimizer을 실제로 구현해보며 optmizer에 대한 개인적 이해를 높일 수 있고, optimizer가 요구하는 사항이 어떤 것이 있는지 더 자세하게 알아볼 수 있을 것이다.
 plateau현상과 zigzag가 가장 optimizer의 과제이다. 이를 위해 Momentum방식을 이용했지만, 이는 zigzag 문제를 해결해주지 못했기에 adaptive방식과 혼합된 adam이 주로 사용되는 추세이다. nesterov momentum 방식은 비용에 비해 성능 향상이 적었다고 한다. 이에 많은 optimizer들 중 momentum optimizer을 이용한 결과와 비교하여 성능향상이 실제로 일어났는지 비교하고자 한다.
 
 \section{Experiments}
-% - Dataset
-데이터셋은 튜토리얼에서 진행한 옷을 이용한 FashionMNIST dataset을 이용했다. 28*28개의 옷 이미지를 한 이미지로 하여 70,000개의 데이터가 있다. 10개의 카테고리로 분류되어있으며, training set과 validation set으로는 6:1로 나누고 있다.
-% - Computing resource (CPU,GPU, OS, pytorch etc.)
-computing resource는 dataset의 규모가 크지 않기에 CPU를 이용한다. windows 10 환경에서 실행했으며, pytorch를 활용해 코드를 작성한다.
-% - Experimental design/setup
-환경이 되는 터미널은 python 3.10.4를 이용했으며, ipynb 확장자로 작업해 작성되었다. 이미지가 한 장 당 28*28개로 784개이므로 input을 784로 잡았으며, category 수가 10개 이므로 output을 10개로 설정했다. momentum rate는 0.03로 최종 설정 한 후 learning rate를 0.2, 0.1, 0.05, 0.01로 차츰 변경해가며 테스트를 진행했다. 전체 epoch 수는 50개로 늘려 더 많은 학습이 진행되도록 변경했다.
-% - Quantitative results / comparison with baselines, SOTA
+\subsection{Dataset \& Computing resource}
+% -  (CPU,GPU, OS, pytorch etc.)
+데이터셋은 딥러닝 튜토리얼에서 진행한 옷을 이용한 FashionMNIST dataset을 이용했다. 28*28개의 옷 이미지를 1개의 파일로 하여 70,000개의 데이터가 있다. 10개의 카테고리로 분류되어있으며, training set과 validation set으로는 6:1로 나누고 있다.
+computing resource는 dataset의 규모가 크지 않기에 CPU를 이용해도 충분할 것이라고 판단했다. windows 10 환경에서 실행했으며, pytorch를 활용해 코드를 작성한다.
+\subsection{Experimental design/setup}
+환경이 되는 터미널은 python 3.10.4를 이용했으며, ipynb 확장자로 작업해 작성되었다. optimizer을 제외한 나머지 모델은 튜토리얼의 linear classifier의 구성을 참고했으며, d2l을 이용해 구현했다. 이미지가 파일 한  개 당 28*28개로 총 784개이므로 input을 784로 잡았으며, category 수가 10개 이므로 output을 10개로 설정했다. batch size는 256개로 잡았다. 이용할 optimizer에서 Baseline으로는 optimizer을 제외한 모든 조건을 동일하게 진행하기 위해 기술한 모델에 Momentum optimizer을 이용해 나온 결과를 활용했다. 이외에는 해당 연구에서 제안한 gravity optimizer와 cosine optimizer을 이용해 실험을 진행했다. momentum rate는 0.03로 설정해 기본적인 initial 강도를 설정해주었으며, learning rate를 0.2, 0.1, 0.05, 0.01로 각각 3개의 optimizer마다 변경해가며 테스트를 진행했다. 기본 튜토리얼에서 epoch를 10개로 한정하여 진행했던 것과는 달리, 전체 epoch 수를 50개로 늘려 더 많은 학습이 진행되도록 계획했다.
+\subsection{Quantitative results / comparison with baselines, SOTA}
 SOTA는 momentum optimizer로 딥러닝을 실행했을 때의 결과를 Default result로 잡았다. 높은 learning rate에서는 gravity optimizer에서 overflow가 나고, 다른 여러 learning rate 환경에서 테스트한 작업들에 대해서는 큰 성능 향상을 확인할 수는 없었지만, learning rate를 0.05로 설정하고 진행된 실험에서는 눈에 띄는 변화를 확인할 수 있었다. Figure~\ref{lr:0.05}에서 gravity optimizer로 진행한 두번째 실험에서는 training loss와 validation loss가 1.8배 빠르게 감소하는 모습을 확인할 수 있다. 실행시간 또한 momentum optimizer를 실행했을 때와 거의 동일한 시간 안에 작동하는 모습을 보이며 상당한 효과를 보여줬다. 하지만, cosine optimizer과 같은 경우는 Figure~\ref{lr:0.2}에서 확인할 수 있듯 epoch 10~20 사이에서 oscillation을 조금 줄였을 뿐, 성능 향상에 있어 두각을 나타내지 못했다. 오히려, 타 optimizer과는 대비해 실행시간이 2배 가량 많이 걸리는 모습을 확인할 수 있다.
 % - Figures (plots)/Tables and their analysis
 
@@ -175,13 +177,11 @@ SOTA는 momentum optimizer로 딥러닝을 실행했을 때의 결과를 Default
       \includegraphics[width=\columnwidth]{img/lr0.1 sgd.jpg}
       \caption{sgd}
    \end{subfigure}
-   \hfill
    \begin{subfigure}[b]{0.3\columnwidth}
       \centering
       \includegraphics[width=\columnwidth]{img/lr0.1 gravity.jpg}
       \caption{gravity}
    \end{subfigure}
-   \hfill
    \begin{subfigure}[b]{0.3\columnwidth}
       \centering
       \includegraphics[width=\columnwidth]{img/lr0.1 cosine.jpg}
@@ -202,35 +202,29 @@ SOTA는 momentum optimizer로 딥러닝을 실행했을 때의 결과를 Default
 \begin{subfigure}[b]{0.3\columnwidth}\centering
    \includegraphics[width=\columnwidth]{img/lr0.01 sgd.jpg}
 \end{subfigure}
-\hfill
 \begin{subfigure}[b]{0.3\columnwidth}\centering
    \includegraphics[width=\columnwidth]{img/lr0.01 gravity.jpg}
 \end{subfigure}
-\hfill
 \begin{subfigure}[b]{0.3\columnwidth}\centering
-   \includegraphics[width=\columnwidth]{img/lr0.01 cosine0.1.jpg}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.3\columnwidth}\centering
-   \includegraphics[width=\columnwidth]{img/lr0.01 cosine0.05.jpg}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.3\columnwidth}\centering
-   \includegraphics[width=\columnwidth]{img/lr0.01 cosine0.01.jpg}
+   \includegraphics[width=\columnwidth]{img/lr0.01 cosine0.03.jpg}
 \end{subfigure}
 \caption{lr=0.01}
 \label{lr:0.01}
 \end{center}
 \end{figure}
 
-% - Discussion why the proposed method is successful or unsuccessful 
-왜 gravity optimizer가 성능 향상이 발생했는지는 명확하다. gradient값을 연산해 learning rate를 조금 더 유연하게 증가시켜줬으므로 속도가 빨라진다. 추가적인 연산이 발생하지만, 거의 선형적인 연산이기 때문에 추가적인 시간이 전체 연산에 비해 큰 연산이 아니라서 시간 마저도 크게 차이나지 않는다.
-cosine optimizer가 실패한 데에 있어서는 분석에 있어 어려움이 있었다. 일단 cosine optimizer을 코드로 구현하는 과정에 있어 vector를 input 784개를 한개의 vector로 구성하는 식으로 진행했어야 하는데, output 10개를 vector로 구성하는 식으로 코드가 짜여진 것을 보인다. 때문에 정확한 vector를 이용하지 않아 큰 차이가 발생했다. 또, vector의 방향이 맞지 않으면 빠르게 방향을 전환하는 방식을 이용하고 있는데, 여기 있어서도 문제점이 발생한다. 방향은 분명 빠르게 전환하지만, 그 과정에서 현재까지 가지고 있던 momentum을 전부 잃게 된다. 또, 각이 벌어지는 것을 통한 조정이 오히려 learning rate가 비교적 작은 쪽에서는 크게 영향을 주지 못한다. 오히려 learning rate를 0.2로 매우 과하게 잡은 곳에서 momentum optimizer이나 gravity optimizer보다 조금 더 나은 결과를 보여주는 것을 Figure~\ref{lr:0.2}에서 확인할 수 있다.\\
-가장 결정적인 문제로는, 작은 dataset size를 들 수 있다. input 784개와 batch size 256개로 연산을 해도 epoch가 10개 정도로 거의 결론이 나오는 데이터셋을 가지고 50까지 돌리며 작업을 했기 때문에 어느정도 차이가 발생하는 것을 겨우 확인할 수 있었다. 이는 dataset의 규모가 비교적으로 너무 작은 것을 활용했기 때문에 결과 차이를 더 비교하지 못했을 것이라고 예상된다.
+\subsection{Discussion}
+\subsubsection{total problem}
+해당 실험에서의 가장 큰 문제는, dataset의 크기가 작다는 것을 들 수 있다. input과 batch size는 유의미한 수준이지만, 데이터셋 크기 자체가 training 용으로 6000개의 이미지가 있다. epoch 10개 정도로 튜토리얼에서 작업을 하더라도 거의 validation loss 0.5, validation accuracy 0.8로 결론이 나오는 데이터셋을 가지고 epoch를 50개까지 늘려 작업을 했기에 드라마틱한 변화를 기대할 수 없었다. 실험 과정에서 가장 큰 문제로 예상된다.
+\subsubsection{gravity optimizer}
+gravity optimizer은 성능 향상에 있어 장점과 단점 모두를 보여줬다. 먼저 문제점을 보자면, gravity optimizer은 높은 learning rate에서 overflow를 보이며 학습을 실패하는 모습을 보였다. 이는 gravity optimizer을 연산하는 과정에서 gradient를 제곱한 후 모두 더하는 작업을 진행하는데, 이 과정에서 값이 너무 큰 값이 들어가 overflow가 발생했을 것으로 예상된다. 이때문에 실험에서는 learning rate가 0.1일 때 성공했지만, 실제로 테스트를 돌릴 당시에는 이 overflow가 나는 임계점을 높이기 위해서 제곱합을 하기 이전에 각 값을 $\sqrt{N}$으로 먼저 나눠줌으로써 문제를 일부 해결했다.\\
+다음으로 장점에 대해 이야기해보자면, learning rate가 작게 설정되었을 때 이를 키워주는 역할을 실제로 한다는 점이다. 실험 결과에서도 말했듯, gravity optimizer은 결국 가속 더 강하게 받을수록 더 강하게 가속받는 성격을 가지고 있다. 이때문에 기본적인 momentum optimizer보다도 빠르게 optima에 가까워지는 모습을 확인할 수 있었다. 심지어 실행시간엔 큰 변화를 주지 않으니 꽤나 유용했다.\\
+결론을 종합해보면, learning rate가 작게 설정되었을 때 사용하기 유용한 방식으로 이야기할 수 있다.
+\subsubsection{cosine optimizer}
+cosine optimizer가 실패한 데에 있어서는 분석에 있어 어려움이 있었다. 분석 결과, 일단 cosine optimizer을 코드로 구현하는 과정에 있어 vector를 input 784개를 한개의 vector로 구성하는 식으로 진행했어야 하는데, output 10개를 vector로 구성하는 식으로 코드가 짜여 발생한 오류가 있는 것으로 결론이 났다. 때문에 정확한 vector를 이용하지 않아 예상과는 다른 결과가 나왔다. 또, vector의 방향이 맞지 않으면 빠르게 방향을 전환하는 방식을 이용하고 있는데, 여기 있어서도 문제점이 발생한다. 방향은 분명 빠르게 전환하지만, 그 과정에서 현재까지 가지고 있던 momentum을 전부 잃게 된다. 또, 각이 벌어지는 것을 통한 조정은 learning rate가 비교적 작은 실험에서는 크게 영향을 주지 못한다. Figure~\ref{lr:0.2}에서처럼 오히려 learning rate를 0.2로 매우 과하게 잡은 곳에서 momentum optimizer보다 조금이나마 나은 결과를 보여주는 것을 확인할 수 있다.
 
 \section{Future direction}
-다음에는 다른 데이터셋을 활용해 훨씬 대규모의 데이터를 처리해 봐야할 것이다. epoch가 100은 되는 것을 해봐야하지 않을까?
-classification을 활용하는 것은 그대로 가는 것이 좋을 것 같다.
+해당 optimizer에 대해 추가적인 연구를 하기 위해서는 큰 노력이 필요할 것이다. 가장 큰 것으로 dataset의 크기를 늘려 질좋은 데이터를 많이 가질 수 있도록 해야한다. 소개한 optimizer들에 대해서는 각각 완수해야할 문제점들이 있는데, 먼저 gravity optimizer에 대해 발전시키기 위해서는 제곱으로 인한 overflow 문제를 해결해야 할 것이며, cosine optimizer과 같은 경우에는 vector의 방향을 정확하게 설정해 올바른 vector을 이용해 방향을 조절하도록 해야한다.
 
 \bibliography{example_paper}
 \bibliographystyle{icml2019}
