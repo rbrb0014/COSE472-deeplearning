@@ -86,8 +86,10 @@
 
 \section{Introduction}
 딥러닝 과정에서 설정하고 연결해줘야 할 모듈들로는 activation function, normalize, regularize 등 다양한 기초적인 모듈들이 있다. 이런 기본적인 모듈에서도 다양한 방식이 활용되고 있으며, 학습하는 모델에 따라 각 dataset에 따라 어떤 방식을 활용하는 지에 따라 그 학습의 결과 또한 최적의 결과를 낼 수도, 내지 못 할 수도 있다. 때문에 적절한 모듈을 선택하는 것이 가장 중요하다고 할 수 있다.\\
-이 중에서도 이번 연구에서 주목하게 된 부분은 Optimizer를 잘 선택한다면 연산량을 획기적으로 줄일 수 있기 때문에 결과가 나오기까지 기다려야 하는 시간을 최소화할 수 있고, 결과값 또한 더 최적값을 이끌어낼 수 있다. Momentum은 이름에서 볼 수 있듯 관성을 활용한 방식인데, 이처럼 optimizer에는 각각 현실에서 어떤 개념을 가지고 optimizer을 구현하고 있다. 그래서 이번 연구에서 또한 직접 철학적인 개념을 활용해 여러 optimizer을 고안해 적용해보고자 했다.\\
-Base가 되는 모델로는 momentum을 이용했다. 관성을 이용하는 가장 기본적인 모델이기도 하며, 다양한 optimizer가 momentum에서 파생해 만들어졌기 때문에 선택하게 되었다. 또, learning rate를 연산과정에 넣어 따로 scheduling을 진행하는 기본적인 의례와는 달리, learning rate를 optimizer에서 고려하도록 설계해 차별점을 주었다. learning rate를 선형적을 곱해 작동하는 방식이 아니라, 연산과정에서 비선형적으로 상황에 맞게 연산되도록 적용한다면 새로운 방식으로 optimizer을 만들 수 있을 것이다. 새로운 개념의 optimizer들을 활용한다면 나머지 같은 모듈들을 활용한다 하더라도 작은 learning rate를 이용하더라도 더 적은 epoch를 이용해도 결과를 더 빠르게 도출해낼 수 있을 것이라고 예상하고 진행했다.\\
+이 중에서도 이번 연구에서 주목하게 된 부분은 optimizer 모듈을 만드는 부분이다. Optimizer가 잘 선택된다면 optimize된 결과가 나올 때 까지 반복 작업해야하는 epoch의 수를 줄일 수 있기 때문에, 결과가 나오기까지의 computing power를 획기적으로 줄일 수 있다. 이를 통해 우리는 결과 도출까지의 시간을 줄이거나, 같은 시간 안에 더 질 좋은 결과를 산출할 수 있게 될 것이다.\\
+Optimizer로 가장 대표적으로 사용된다고 할 수 있는 것은 바로 Momentum optimizer이다. 이름에서도 볼 수 있듯 관성 개념을 학습에 적용시켜 gradient descending 작업을 단축시키는 방식인데, 이처럼 다양한 optimizer를 만들어내는 데 있어서 나름의 철학과 현상을 가지고 optimizer의 기능을 구현하고 있다. 이러한 생각에서 영감을 받아, 이번 연구에서는 현실에 있는 여러 개념을 이용해 새로운 optimizer들을 고안해 만들어보고자 했다.\\
+또, 여러 optimizer에서는 learning rate를 선형적으로 곱해해주는 방식을 활용하고 있는데, 이에 비선형적으로 적용하는 방식은 왜 주목되지 못하는지에 대해서도 함께 알아보고자 한다.\\
+해당 연구에서는 Base가 되는 모델로는 momentum optimizer을 이용했다. 관성을 이용하는 가장 기본적인 모델이기도 하며, 다양한 optimizer가 momentum optimizer에서 파생해 만들어졌기 때문에 선택하게 되었다. momentum optimizer과는 구분되는 차별점은 크게 두가지이다. 따로 scheduling을 설정해 학습을 진행하는 타 의례와는 달리, learning rate를 연산 과정에서 비선형적으로 설계해 차별점을 만들었다. 또, 학습 가속에 있어 중력의 개념과 학습 방향에 있어 새로운 개념을 도입함으로써 연산 과정에서 비선형적으로 상황에 맞는 학습 강도가 설정될 수 있도록 함으로써 optimizer에 새로운 방향을 제시했다. 이런 방법을 활용한다면 가상의 기대되는 적절한 값과는 차이가 있는 learning rate를 이용했더라도 optimizer가 타협하여 learning rate를 조절하는 기대효과를 낼 수 있다. 이를 통해 더 적은 epoch를 이용해 같은 결과를 더 빠르게 도출해낼 수 있을 것이라고 예상하고 실험을 진행했다.\\
 
 
 \section{Methods}
@@ -153,32 +155,14 @@ plateau현상과 zigzag가 가장 optimizer의 과제이다. 이를 위해 Momen
 % - Computing resource (CPU,GPU, OS, pytorch etc.)
 computing resource는 dataset의 규모가 크지 않기에 CPU를 이용한다. windows 10 환경에서 실행했으며, pytorch를 활용해 코드를 작성한다.
 % - Experimental design/setup
-setup으로 python 3.10.4를 이용했다. ipynb로 작성되었다. 기본적으로 input 784개, output 10개, learning rate 0.05로 하고 momentum rate는 0.03으로 정한다. epoch 50개로 늘려 진행한다.
+환경이 되는 터미널은 python 3.10.4를 이용했으며, ipynb 확장자로 작업해 작성되었다. 이미지가 한 장 당 28*28개로 784개이므로 input을 784로 잡았으며, category 수가 10개 이므로 output을 10개로 설정했다. momentum rate는 0.03로 최종 설정 한 후 learning rate를 0.2, 0.1, 0.05, 0.01로 차츰 변경해가며 테스트를 진행했다. 전체 epoch 수는 50개로 늘려 더 많은 학습이 진행되도록 변경했다.
 % - Quantitative results / comparison with baselines, SOTA
-SOTA는 momentum으로 실행했을 때의 결과를 Default result로 잡았다. 여러 learning rate에서 거의 형태가 비슷하게 나와 성능 향상을 크게 확인할 수 없었지만, learning rate를 0.05로 잡고 진행한 Figure~\ref{lr:0.05}에서는 gravity optimizer에서는 약 1.8배 빠르게 training loss와 validation loss가 낮아진 모습을 확인할 수 있다. 심지어, 실행시간도 momentum optimizer과 거의 비슷한 모습을 볼 수 있다. 하지만, cosine optimizer같은 경우에는 타 optimizer과는 다르게 시간이 훨씬 많이 걸리는 모습을 볼 수 있다.
+SOTA는 momentum optimizer로 딥러닝을 실행했을 때의 결과를 Default result로 잡았다. 높은 learning rate에서는 gravity optimizer에서 overflow가 나고, 다른 여러 learning rate 환경에서 테스트한 작업들에 대해서는 큰 성능 향상을 확인할 수는 없었지만, learning rate를 0.05로 설정하고 진행된 실험에서는 눈에 띄는 변화를 확인할 수 있었다. Figure~\ref{lr:0.05}에서 gravity optimizer로 진행한 두번째 실험에서는 training loss와 validation loss가 1.8배 빠르게 감소하는 모습을 확인할 수 있다. 실행시간 또한 momentum optimizer를 실행했을 때와 거의 동일한 시간 안에 작동하는 모습을 보이며 상당한 효과를 보여줬다. 하지만, cosine optimizer과 같은 경우는 Figure~\ref{lr:0.2}에서 확인할 수 있듯 epoch 10~20 사이에서 oscillation을 조금 줄였을 뿐, 성능 향상에 있어 두각을 나타내지 못했다. 오히려, 타 optimizer과는 대비해 실행시간이 2배 가량 많이 걸리는 모습을 확인할 수 있다.
 % - Figures (plots)/Tables and their analysis
 
 \begin{figure}[ht]
 \begin{center}\centering
-   \begin{subfigure}[b]{0.3\columnwidth}\centering
-      \includegraphics[width=\columnwidth]{img/lr0.2 sgd.jpg}
-   \end{subfigure}
-   \hfill
-   \begin{subfigure}[b]{0.3\columnwidth}\centering
-      \includegraphics[width=\columnwidth]{img/lr0.2 gravity.jpg}
-   \end{subfigure}
-   \hfill
-   \begin{subfigure}[b]{0.3\columnwidth}\centering
-      \includegraphics[width=\columnwidth]{img/lr0.2 cosine0.1.jpg}
-   \end{subfigure}
-   \hfill
-   \begin{subfigure}[b]{0.3\columnwidth}\centering
-      \includegraphics[width=\columnwidth]{img/lr0.2 cosine0.05.jpg}
-   \end{subfigure}
-   \hfill
-   \begin{subfigure}[b]{0.3\columnwidth}\centering
-      \includegraphics[width=\columnwidth]{img/lr0.2 cosine0.01.jpg}
-   \end{subfigure}
+\includegraphics[width=\columnwidth]{img/lr0.2 m0.03.jpg}
 \caption{lr=0.2}
 \label{lr:0.2}
 \end{center}
